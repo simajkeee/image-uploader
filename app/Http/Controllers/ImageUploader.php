@@ -12,6 +12,11 @@ class ImageUploader extends Controller
         return view('imageUploader.index');
     }
 
+    public function show()
+    {
+        return Image::latest()->pluck('name')->toArray();
+    }
+
     public function store(Request $request): Image
     {
         if (!$request->file('image')) {
