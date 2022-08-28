@@ -27,6 +27,7 @@ setOptions({
     name: 'image',
     allowMultiple: true,
     maxFiles: 3,
+    maxParallelUploads: 3,
 })
 
 const FilePond = vueFilePond(FilePondPluginFileValidateType);
