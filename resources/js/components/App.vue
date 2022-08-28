@@ -1,7 +1,7 @@
 <template>
     <div>
         <file-pond
-            name="image-upload"
+            name="image"
             ref="pond"
             allow-multiple="true"
             max-files="3"
@@ -32,6 +32,7 @@ export default {
     methods: {
         handleFilePondInit: function () {
             console.log('FilePond has initialized');
+            this.$refs.pond.getFiles();
         },
     },
 }
