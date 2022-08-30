@@ -14,10 +14,10 @@ class ImageUploader extends Controller
 
     public function show()
     {
-        return Image::latest()->pluck('name')->toArray();
+        return Image::latest()->pluck('name');
     }
 
-    public function store(Request $request): Image
+    public function store(Request $request): string
     {
         if (!$request->file('image')) {
             return response()->json(['err' => 'Image is not present.'], 400);
@@ -33,10 +33,12 @@ class ImageUploader extends Controller
 
         $file = $request->file('image');
 
-        return Image::create([
+        $image = Image::create([
             'name' => $file->hashName(),
             'extension' => $file->extension(),
             'size' => $file->getSize(),
         ]);
+
+        return $image->name;
     }
 }
