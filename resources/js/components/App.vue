@@ -1,13 +1,21 @@
 <template>
-    <div>
-        <file-pond
-            ref="pond"
-            accepted-file-types="image/*"
-        />
+    <div class="row">
+        <div class="col-12">
+            <file-pond
+                ref="pond"
+                accepted-file-types="image/*"
+                @processfile="processFile"
+            />
+        </div>
+        <div class="col-4 mb-2" v-for="(image, index) in images" :key="index">
+            <img :src="`/storage/images/`+ image" class="img-fluid"/>
+        </div>
     </div>
 </template>
 
 <script>
+import axios from "axios";
+
 // Import filepond
 import vueFilePond from 'vue-filepond';
 import {setOptions} from "filepond";
@@ -15,7 +23,6 @@ import {setOptions} from "filepond";
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 // Import styles
 import 'filepond/dist/filepond.min.css';
-// import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 
 setOptions({
     server: {
@@ -36,6 +43,29 @@ export default {
     name: "App",
     components: {
         FilePond,
+    },
+    data() {
+        return {
+            images: []
+        }
+    },
+    created() {
+        axios.get('/images')
+        .then(res => {
+            this.images = res.data
+        }).catch(err => {
+            console.log(err)
+        })
+    },
+    methods: {
+        processFile(err, file) {
+            if (err) {
+                console.log('Oh no');
+                return;
+            }
+            console.log(this.images)
+            this.images.unshift(file.serverId);
+        }
     }
 }
 </script>
