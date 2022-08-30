@@ -3,7 +3,8 @@
         <div class="col-12">
             <file-pond
                 ref="pond"
-                accepted-file-types="image/*"
+                accepted-file-types="image/jpg, image/jpeg, image/png"
+                maxFileSize="1900KB"
                 @processfile="processFile"
             />
         </div>
@@ -21,15 +22,25 @@ import vueFilePond from 'vue-filepond';
 import {setOptions} from "filepond";
 // Import plugins
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 // Import styles
 import 'filepond/dist/filepond.min.css';
 
+let serverMsg = {}
 setOptions({
     server: {
-        url: '/upload',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        process: {
+            url: '/upload',
+            onerror: (response) => {
+                serverMsg = JSON.parse(response);
+            },
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            }
         }
+    },
+    labelFileProcessingError: () => {
+        return serverMsg.error;
     },
     name: 'image',
     allowMultiple: true,
@@ -37,7 +48,7 @@ setOptions({
     maxParallelUploads: 3,
 })
 
-const FilePond = vueFilePond(FilePondPluginFileValidateType);
+const FilePond = vueFilePond(FilePondPluginFileValidateType, FilePondPluginFileValidateSize);
 
 export default {
     name: "App",
@@ -60,12 +71,11 @@ export default {
     methods: {
         processFile(err, file) {
             if (err) {
-                console.log('Oh no');
+                console.log(err);
                 return;
             }
-            console.log(this.images)
             this.images.unshift(file.serverId);
-        }
+        },
     }
 }
 </script>
